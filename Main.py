@@ -63,10 +63,14 @@ def RunExpirement(train_lines:list,test_lines:list):
     optimizer= torch.optim.Adam(params= model.parameters(),lr= exp_args['lr'])
     criterion= torch.nn.MSELoss(reduction='mean').to(device=device)
 
-    best_model= train_model(model=model, optimizer=optimizer,dataloaders= dataloaders,scheduler=None,device=device,
+    best_model,train_loss_list,val_lost_list= train_model(model=model, optimizer=optimizer,dataloaders= dataloaders,scheduler=None,device=device,
                             criterion=criterion, num_epochs= exp_args['num_epochs'])
+
     test_loss= eval_model(model= best_model, dataloaders= dataloaders, criterion= criterion, optimizer= optimizer,
                           scheduler= None, device= device, num_epochs= 1)
+
+    exp_data= dict(model= best_model.state_dict(),train_loss= train_loss_list, val_loss= val_lost_list,test_loss= test_loss)
+    torch.save(exp_data,f'{os.getcwd()}/ExpData.pt')
 
 if __name__ =='__main__':
     RunExpirement(train_lines=['line1','line2','line3','line4','line5'],test_lines=['line6','line7'])

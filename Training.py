@@ -8,7 +8,7 @@ def train_model(model, dataloaders, criterion, optimizer, scheduler, device, num
 
     best_model_wts = copy.deepcopy(model.state_dict())
     best_loss = 1e5
-
+    train_loss_list, val_lost_list= [],[]
     for epoch in range(num_epochs):
         print('Epoch {}/{}'.format(epoch + 1, num_epochs))
         print('-' * 25)
@@ -55,6 +55,11 @@ def train_model(model, dataloaders, criterion, optimizer, scheduler, device, num
             if phase == 'val' and epoch_loss <= best_loss:
                 best_loss= epoch_loss
                 best_model_wts = copy.deepcopy(model.state_dict())
+            if phase == 'train':
+                train_loss_list.append(epoch_loss)
+            elif phase == 'val':
+                val_lost_list.append(epoch_loss)
+
 
     time_elapsed = time.time() - since
     print('Training complete in {:.0f}m {:.0f}s'.format(
@@ -63,7 +68,7 @@ def train_model(model, dataloaders, criterion, optimizer, scheduler, device, num
 
     # load best model weights
     model.load_state_dict(best_model_wts)
-    return model
+    return model,train_loss_list,val_lost_list
 
 
 def eval_model(model, dataloaders, criterion, optimizer, scheduler, device, num_epochs=25):
