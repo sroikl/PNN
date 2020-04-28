@@ -54,7 +54,11 @@ def RunExpirement(train_lines:list,test_lines:list):
     print('====== Building Model ======')
     model= TCN_Model(num_levels= exp_args['tcn_num_levels'], num_hidden= exp_args['tcn_hidden_channels'],
                      embedding_size= exp_args['embedding_dim'],kernel_size=exp_args['tcn_kernel_size'],
-                     dropout= exp_args['tcn_dropout'],encoder_name='Inception').double().to(device=device)
+                     dropout= exp_args['tcn_dropout'],encoder_name='Inception').to(device=device)
+
+    if torch.cuda.device_count() > 1:
+        print("Let's use", torch.cuda.device_count(), "GPUs!")
+        model = torch.nn.DataParallel(model)
 
     optimizer= torch.optim.Adam(params= model.parameters(),lr= exp_args['lr'])
     criterion= torch.nn.MSELoss(reduction='mean').to(device=device)

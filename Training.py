@@ -24,8 +24,8 @@ def train_model(model, dataloaders, criterion, optimizer, scheduler, device, num
             # Iterate over data.
             with tqdm.tqdm(total=len(dataloaders[phase]),desc=f'{phase}') as pbar:
                 for inputs, labels in dataloaders[phase]:
-                    inputs = inputs.double().to(device)
-                    labels = labels.double().to(device)
+                    inputs = inputs.to(device)
+                    labels = labels.to(device)
 
                     # zero the parameter gradients
                     optimizer.zero_grad()
