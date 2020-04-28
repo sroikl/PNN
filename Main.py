@@ -51,13 +51,10 @@ def RunExpirement(train_lines:list,test_lines:list):
     dataloaders = {'train': DataLoader(train_set,batch_size= exp_args['batch_size'],shuffle= False,drop_last=True),
                    'val': DataLoader(val_set,batch_size= exp_args['batch_size'],shuffle= False,drop_last=True),
                    'test': DataLoader(dataset_test,batch_size= exp_args['batch_size'],shuffle= False,drop_last=True)}
-
+    print('====== Building Model ======')
     model= TCN_Model(num_levels= exp_args['tcn_num_levels'], num_hidden= exp_args['tcn_hidden_channels'],
                      embedding_size= exp_args['embedding_dim'],kernel_size=exp_args['tcn_kernel_size'],
                      dropout= exp_args['tcn_dropout'],encoder_name='Inception').double().to(device=device)
-
-    if torch.cuda.is_available():
-        model= torch.nn.DataParallel(model).to(device=device)
 
     optimizer= torch.optim.Adam(params= model.parameters(),lr= exp_args['lr'])
     criterion= torch.nn.MSELoss(reduction='mean').to(device=device)
