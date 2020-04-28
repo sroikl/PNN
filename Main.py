@@ -13,39 +13,42 @@ def RunExpirement(train_lines:list,test_lines:list):
 
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
-    if os.path.exists(f'{os.getcwd()}/DataObject.pt'):
-        DataObject= torch.load(f'{os.getcwd()}/DataObject.pt')
+    if os.path.exists(f'{os.getcwd()}/datasets_dict.pt'):
+        datasets= torch.load(f'{os.getcwd()}/datasets_dict.pt')
+        dataset_train= datasets['dataset_train'] ; dataset_test= datasets['dataset_test']
+
     else:
         #Collect all the data from all available exp's
         DataObject= CollectData(dataloc_dict= dataloc_dict, labelloc_dict= labelloc_dict,
                                 list_of_exp= list_of_exp, list_of_keys= list_of_keys)
-        torch.save(DataObject,f'{os.getcwd()}/DataObject.pt')
 
 
-    Transforms= transforms.Compose([transforms.ToPILImage(),transforms.Resize((224,224))])
-    #Parse the data per lines
-    train_sampels,train_labels,train_wet_norms,train_dry_norms= [],[],[],[]
-    test_sampels, test_labels, test_wet_norms, test_dry_norms = [], [], [], []
-    for exp in line_dict.keys():
-        for line in line_dict[exp].keys():
-            for plant in line_dict[exp][line]:
-                sampels= DataObject.ImageDict[exp][plant] ; labels= DataObject.LabelDict[exp][plant]
-                wet_norms= DataObject.image_wet_norm[exp][plant] ; dry_norms= DataObject.image_dry_norm[exp][plant]
-                if line in train_lines:
-                    train_sampels+= sampels
-                    train_labels+= labels
-                    train_wet_norms+= wet_norms
-                    train_dry_norms+= dry_norms
-                elif line in test_lines:
-                    test_sampels += sampels
-                    test_labels += labels
-                    test_wet_norms += wet_norms
-                    test_dry_norms += dry_norms
+        Transforms= transforms.Compose([transforms.ToPILImage(),transforms.Resize((224,224))])
+        #Parse the data per lines
+        train_sampels,train_labels,train_wet_norms,train_dry_norms= [],[],[],[]
+        test_sampels, test_labels, test_wet_norms, test_dry_norms = [], [], [], []
+        for exp in line_dict.keys():
+            for line in line_dict[exp].keys():
+                for plant in line_dict[exp][line]:
+                    sampels= DataObject.ImageDict[exp][plant] ; labels= DataObject.LabelDict[exp][plant]
+                    wet_norms= DataObject.image_wet_norm[exp][plant] ; dry_norms= DataObject.image_dry_norm[exp][plant]
+                    if line in train_lines:
+                        train_sampels+= sampels
+                        train_labels+= labels
+                        train_wet_norms+= wet_norms
+                        train_dry_norms+= dry_norms
+                    elif line in test_lines:
+                        test_sampels += sampels
+                        test_labels += labels
+                        test_wet_norms += wet_norms
+                        test_dry_norms += dry_norms
 
-    dataset_train= PlantDataset(file_list= train_sampels , label_list= train_labels, image_wet_norm= train_wet_norms,
-                                image_dry_norm= train_dry_norms, Transforms= Transforms,desc= 'Build Train Dataset')
-    dataset_test= PlantDataset(file_list= test_sampels, label_list= test_labels, image_wet_norm= test_wet_norms,
-                               image_dry_norm= test_dry_norms, Transforms= Transforms,desc= 'Build Test Dataset')
+        dataset_train= PlantDataset(file_list= train_sampels , label_list= train_labels, image_wet_norm= train_wet_norms,
+                                    image_dry_norm= train_dry_norms, Transforms= Transforms,desc= 'Build Train Dataset')
+        dataset_test= PlantDataset(file_list= test_sampels, label_list= test_labels, image_wet_norm= test_wet_norms,
+                                   image_dry_norm= test_dry_norms, Transforms= Transforms,desc= 'Build Test Dataset')
+        datasets_dict= dict(dataset_train= dataset_train, dataset_test= dataset_test)
+        torch.save(datasets_dict, f'{os.getcwd()}/datasets_dict.pt')
 
     lenDataset = len(dataset_train)
     lenTrainset = int(lenDataset * 0.9)
