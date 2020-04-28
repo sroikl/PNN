@@ -3,6 +3,8 @@ import numpy as np
 from torch import nn
 import torchvision
 import tqdm
+import matplotlib.pyplot as plt
+
 class PlantDataset(Dataset,nn.Module):
     def __init__(self,file_list,label_list,image_wet_norm,image_dry_norm,Transforms= None,desc= 'Train'):
         super(PlantDataset,self).__init__()
@@ -31,20 +33,7 @@ class PlantDataset(Dataset,nn.Module):
     def norm_im(self,data, dry, wet):
 
         data = (data - wet) / (dry - wet)
-        try:
-            xindices_high, yindices_high = zip(*np.argwhere(data > 1.))
-        except ValueError:
-            xindices_high, yindices_high= (),()
-
-        try:
-            xindices_low, yindices_low = zip(*np.argwhere(data < 0.))
-        except ValueError:
-            xindices_low, yindices_low= (),()
-
-        x_indices = xindices_high + xindices_low
-        y_indices = yindices_high + yindices_low
-
-        for xidx,yidx in zip(x_indices,y_indices):
-            data[xidx, yidx] = 10
+        data[data > 1] = 10
+        data[data < 0] = 10
 
         return data
