@@ -18,7 +18,7 @@ def RunExpirement(train_lines:list,test_lines:list):
                             list_of_exp= list_of_exp, list_of_keys= list_of_keys)
 
 
-    Transforms= transforms.Compose([transforms.ToPILImage(),transforms.Resize((224,224))])
+    Transforms= transforms.Compose([transforms.ToPILImage(),transforms.Resize((300,300))])
     #Parse the data per lines
     train_sampels,train_labels,train_wet_norms,train_dry_norms= [],[],[],[]
     test_sampels, test_labels, test_wet_norms, test_dry_norms = [], [], [], []
@@ -54,7 +54,7 @@ def RunExpirement(train_lines:list,test_lines:list):
 
     model= TCN_Model(num_levels= exp_args['tcn_num_levels'], num_hidden= exp_args['tcn_hidden_channels'],
                      embedding_size= exp_args['embedding_dim'],kernel_size=exp_args['tcn_kernel_size'],
-                     dropout= exp_args['tcn_dropout'],encoder_name='B0').double().to(device=device)
+                     dropout= exp_args['tcn_dropout'],encoder_name='Inception').double().to(device=device)
 
     if torch.cuda.is_available():
         model= torch.nn.DataParallel(model).to(device=device)
