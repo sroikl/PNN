@@ -13,42 +13,35 @@ def RunExpirement(train_lines:list,test_lines:list):
 
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
-    if os.path.exists(f'{os.getcwd()}/datasets_dict.pt'):
-        datasets= torch.load(f'{os.getcwd()}/datasets_dict.pt')
-        dataset_train= datasets['dataset_train'] ; dataset_test= datasets['dataset_test']
-
-    else:
-        #Collect all the data from all available exp's
-        DataObject= CollectData(dataloc_dict= dataloc_dict, labelloc_dict= labelloc_dict,
-                                list_of_exp= list_of_exp, list_of_keys= list_of_keys)
+    #Collect all the data from all available exp's
+    DataObject= CollectData(dataloc_dict= dataloc_dict, labelloc_dict= labelloc_dict,
+                            list_of_exp= list_of_exp, list_of_keys= list_of_keys)
 
 
-        Transforms= transforms.Compose([transforms.ToPILImage(),transforms.Resize((224,224))])
-        #Parse the data per lines
-        train_sampels,train_labels,train_wet_norms,train_dry_norms= [],[],[],[]
-        test_sampels, test_labels, test_wet_norms, test_dry_norms = [], [], [], []
-        for exp in line_dict.keys():
-            for line in line_dict[exp].keys():
-                for plant in line_dict[exp][line]:
-                    sampels= DataObject.ImageDict[exp][plant] ; labels= DataObject.LabelDict[exp][plant]
-                    wet_norms= DataObject.image_wet_norm[exp][plant] ; dry_norms= DataObject.image_dry_norm[exp][plant]
-                    if line in train_lines:
-                        train_sampels+= sampels
-                        train_labels+= labels
-                        train_wet_norms+= wet_norms
-                        train_dry_norms+= dry_norms
-                    elif line in test_lines:
-                        test_sampels += sampels
-                        test_labels += labels
-                        test_wet_norms += wet_norms
-                        test_dry_norms += dry_norms
+    Transforms= transforms.Compose([transforms.ToPILImage(),transforms.Resize((224,224))])
+    #Parse the data per lines
+    train_sampels,train_labels,train_wet_norms,train_dry_norms= [],[],[],[]
+    test_sampels, test_labels, test_wet_norms, test_dry_norms = [], [], [], []
+    for exp in line_dict.keys():
+        for line in line_dict[exp].keys():
+            for plant in line_dict[exp][line]:
+                sampels= DataObject.ImageDict[exp][plant] ; labels= DataObject.LabelDict[exp][plant]
+                wet_norms= DataObject.image_wet_norm[exp][plant] ; dry_norms= DataObject.image_dry_norm[exp][plant]
+                if line in train_lines:
+                    train_sampels.append(sampels)
+                    train_labels.append(labels)
+                    train_wet_norms.append(wet_norms)
+                    train_dry_norms.append(dry_norms)
+                elif line in test_lines:
+                    test_sampels.append(sampels)
+                    test_labels.append(labels)
+                    test_wet_norms.append(wet_norms)
+                    test_dry_norms.append(dry_norms)
 
-        dataset_train= PlantDataset(file_list= train_sampels , label_list= train_labels, image_wet_norm= train_wet_norms,
-                                    image_dry_norm= train_dry_norms, Transforms= Transforms,desc= 'Build Train Dataset')
-        dataset_test= PlantDataset(file_list= test_sampels, label_list= test_labels, image_wet_norm= test_wet_norms,
-                                   image_dry_norm= test_dry_norms, Transforms= Transforms,desc= 'Build Test Dataset')
-        datasets_dict= dict(dataset_train= dataset_train, dataset_test= dataset_test)
-        torch.save(datasets_dict, f'{os.getcwd()}/datasets_dict.pt')
+    dataset_train= PlantDataset(file_list= train_sampels , label_list= train_labels, image_wet_norm= train_wet_norms,
+                                image_dry_norm= train_dry_norms, Transforms= Transforms,desc= 'Build Train Dataset')
+    dataset_test= PlantDataset(file_list= test_sampels, label_list= test_labels, image_wet_norm= test_wet_norms,
+                               image_dry_norm= test_dry_norms, Transforms= Transforms,desc= 'Build Test Dataset')
 
     lenDataset = len(dataset_train)
     lenTrainset = int(lenDataset * 0.9)
@@ -63,6 +56,9 @@ def RunExpirement(train_lines:list,test_lines:list):
                      embedding_size= exp_args['embedding_dim'],kernel_size=exp_args['tcn_kernel_size'],
                      dropout= exp_args['tcn_dropout'],encoder_name='B0').double().to(device=device)
 
+    if torch.cuda.is_available():
+        model= torch.nn.DataParallel(model).to(device=device)
+
     optimizer= torch.optim.Adam(params= model.parameters(),lr= exp_args['lr'])
     criterion= torch.nn.MSELoss(reduction='mean').to(device=device)
 
@@ -76,4 +72,5 @@ def RunExpirement(train_lines:list,test_lines:list):
     torch.save(exp_data,f'{os.getcwd()}/ExpData.pt')
 
 if __name__ =='__main__':
-    RunExpirement(train_lines=['line1','line2','line3','line4','line5'],test_lines=['line6','line7'])
+    # RunExpirement(train_lines=['line1','line2','line3','line4','line5'],test_lines=['line6','line7'])
+    RunExpirement(train_lines=['line7',],test_lines=['line1','line2','line3','line4','line5','line6'])

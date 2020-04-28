@@ -1,10 +1,9 @@
 import torch
-import time
 import copy
 import tqdm
+import numpy as np
 
 def train_model(model, dataloaders, criterion, optimizer, scheduler, device, num_epochs=25):
-    since = time.time()
 
     best_model_wts = copy.deepcopy(model.state_dict())
     best_loss = 1e5
@@ -20,7 +19,7 @@ def train_model(model, dataloaders, criterion, optimizer, scheduler, device, num
             else:
                 model.eval()  # Set model to evaluate mode
 
-            running_loss = 0.0
+            running_loss = []
 
             # Iterate over data.
             with tqdm.tqdm(total=len(dataloaders[phase]),desc=f'{phase}') as pbar:
@@ -43,28 +42,24 @@ def train_model(model, dataloaders, criterion, optimizer, scheduler, device, num
                             optimizer.step()
 
                     # statistics
-                    running_loss += loss.item() * inputs.size(0)
+                    running_loss.append(loss.item())
+                    pbar.set_description(f'{phase} ({loss.item():.3f})')
                     pbar.update()
 
-                epoch_loss = running_loss / (len(labels)*len(dataloaders[phase]))
+                epoch_loss = np.sum(running_loss) /len(dataloaders[phase])
 
-            print('{} Loss: {:.4f}'.format(
+            print('{} Epoch Loss: {:.4f}'.format(
                 phase, epoch_loss))
 
             # deep copy the model
             if phase == 'val' and epoch_loss <= best_loss:
                 best_loss= epoch_loss
                 best_model_wts = copy.deepcopy(model.state_dict())
+
             if phase == 'train':
                 train_loss_list.append(epoch_loss)
             elif phase == 'val':
                 val_lost_list.append(epoch_loss)
-
-
-    time_elapsed = time.time() - since
-    print('Training complete in {:.0f}m {:.0f}s'.format(
-        time_elapsed // 60, time_elapsed % 60))
-    print('Best val Acc: {:4f}'.format(best_loss))
 
     # load best model weights
     model.load_state_dict(best_model_wts)
@@ -72,8 +67,6 @@ def train_model(model, dataloaders, criterion, optimizer, scheduler, device, num
 
 
 def eval_model(model, dataloaders, criterion, optimizer, scheduler, device, num_epochs=25):
-    since = time.time()
-
 
     for epoch in range(num_epochs):
         print('Epoch {}/{}'.format(epoch + 1, num_epochs))
@@ -82,7 +75,7 @@ def eval_model(model, dataloaders, criterion, optimizer, scheduler, device, num_
         for phase in ['test']:
             model.eval()  # Set model to evaluate mode
 
-            running_loss = 0.0
+            running_loss = []
 
             # Iterate over data.
             with tqdm.tqdm(total=len(dataloaders[phase]),desc=f'{phase}') as pbar:
@@ -100,16 +93,12 @@ def eval_model(model, dataloaders, criterion, optimizer, scheduler, device, num_
                         loss = criterion(outputs, labels)
 
                     # statistics
-                    running_loss += loss.item() * inputs.size(0)
+                    running_loss.append(loss.item())
 
-            epoch_loss = running_loss / (len(labels) * len(dataloaders[phase]))
+            epoch_loss = np.sum(running_loss) / len(dataloaders[phase])
 
-            print('{} Loss: {:.4f}'.format(phase, epoch_loss))
+            print('{} Epoch Loss: {:.4f}'.format(phase, epoch_loss))
 
 
-    time_elapsed = time.time() - since
-    print('Training complete in {:.0f}m {:.0f}s'.format(
-        time_elapsed // 60, time_elapsed % 60))
-    print('Best Loss: {:4f}'.format(epoch_loss))
     return epoch_loss
 
