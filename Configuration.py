@@ -1,4 +1,3 @@
-import argparse
 from os.path import expanduser
 import os
 from datetime import datetime
@@ -28,17 +27,17 @@ exp3_norm_map= {'dry':((305,334),(223,260)),'wet':((208,225),(186,199))}
 
 norm_map= {'exp3':exp3_norm_map,'exp1000':exp1000_norm_map}
 
-exp1000_dataloc= "//Users/roiklein/Dropbox/Msc Project/Deep Learning Project/Exp1000_Full/"
-exp1000_labelloc= '/Users/roiklein/Dropbox/Msc Project/Deep Learning Project/lys_prc.csv'
-
-exp3_dataloc= '/Users/roiklein/Desktop/PNN/Example DB/'
-exp3_labelloc= '/Users/roiklein/Desktop/PNN/DL_TC_EXP_3-5.csv'
+# exp1000_dataloc= "//Users/roiklein/Dropbox/Msc Project/Deep Learning Project/Exp1000_Full/"
+# exp1000_labelloc= '/Users/roiklein/Dropbox/Msc Project/Deep Learning Project/lys_prc.csv'
 #
-# exp1000_dataloc = expanduser('~/Exp1000/')
-# exp1000_labelloc = expanduser('~/PNN-AI/lys_prc.csv')
+# exp3_dataloc= '/Users/roiklein/Desktop/PNN/Example DB/'
+# exp3_labelloc= '/Users/roiklein/Desktop/PNN/DL_TC_EXP_3-5.csv'
 
-# exp3_dataloc= expanduser('~/Exp3_5/')
-# exp3_labelloc= expanduser('~/PNN/DL_TC_EXP_3-5.csv')
+exp1000_dataloc = expanduser('~/Exp1000/')
+exp1000_labelloc = expanduser('~/PNN-AI/lys_prc.csv')
+#
+exp3_dataloc= expanduser('~/Exp3_5/')
+exp3_labelloc= expanduser('~/PNN/DL_TC_EXP_3-5.csv')
 
 # SAVE_DIR = expanduser('~/PNN-AI/')
 
