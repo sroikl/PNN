@@ -15,7 +15,7 @@ def RunExpirement(train_lines:list,test_lines:list):
 
     #Collect all the data from all available exp's
     DataObject= CollectData(dataloc_dict= dataloc_dict, labelloc_dict= labelloc_dict,
-                            list_of_exp= list_of_exp, list_of_keys= list_of_keys)
+                            list_of_exp= list_of_exp, list_of_keys= list_of_keys,pad_size= 300)
 
 
     Transforms= transforms.Compose([transforms.ToPILImage(),transforms.Resize((300,300))])
@@ -51,10 +51,11 @@ def RunExpirement(train_lines:list,test_lines:list):
     dataloaders = {'train': DataLoader(train_set,batch_size= exp_args['batch_size'],shuffle= False,drop_last=True),
                    'val': DataLoader(val_set,batch_size= exp_args['batch_size'],shuffle= False,drop_last=True),
                    'test': DataLoader(dataset_test,batch_size= exp_args['batch_size'],shuffle= False,drop_last=True)}
+
     print('====== Building Model ======')
     model= TCN_Model(num_levels= exp_args['tcn_num_levels'], num_hidden= exp_args['tcn_hidden_channels'],
                      embedding_size= exp_args['embedding_dim'],kernel_size=exp_args['tcn_kernel_size'],
-                     dropout= exp_args['tcn_dropout'],encoder_name='Inception').to(device=device)
+                     dropout= exp_args['tcn_dropout'],encoder_name='Inception').double().to(device=device)
 
     if torch.cuda.device_count() > 1:
         print("Let's use", torch.cuda.device_count(), "GPUs!")
@@ -73,5 +74,5 @@ def RunExpirement(train_lines:list,test_lines:list):
     torch.save(exp_data,f'{os.getcwd()}/ExpData.pt')
 
 if __name__ =='__main__':
-    # RunExpirement(train_lines=['line1','line2','line3','line4','line5'],test_lines=['line6','line7'])
-    RunExpirement(train_lines=['line7',],test_lines=['line1','line2','line3','line4','line5','line6'])
+    RunExpirement(train_lines=['line1','line2','line3','line4','line5'],test_lines=['line6'])
+    # RunExpirement(train_lines=['line7',],test_lines=['line1','line2','line3','line4','line5','line6'])

@@ -7,8 +7,9 @@ import glob
 from matplotlib import pyplot as plt
 
 class CollectData:
-    def __init__(self,dataloc_dict:dict,labelloc_dict:dict,list_of_exp:list,list_of_keys:list):
+    def __init__(self,dataloc_dict:dict,labelloc_dict:dict,list_of_exp:list,list_of_keys:list,pad_size:int):
 
+        self.padsize= pad_size
         self.dataloc_dict= dataloc_dict
         self.labelloc_dict= labelloc_dict
         self.ImageDict, self.LabelDict,self.DateDict,self.image_wet_norm,self.image_dry_norm= \
@@ -38,12 +39,20 @@ class CollectData:
             dry_tmp,wet_tmp= self.get_norm_vals(exp= exp,image=image)
 
             for key in self.ImageDict[exp].keys():
-                img = image[cfg.pixelmap[exp][key][1][0]:cfg.pixelmap[exp][key][1][1],
-                                cfg.pixelmap[exp][key][0][0]:cfg.pixelmap[exp][key][0][1]]
+                img = self.pad_im(image[cfg.pixelmap[exp][key][1][0]:cfg.pixelmap[exp][key][1][1],
+                                cfg.pixelmap[exp][key][0][0]:cfg.pixelmap[exp][key][0][1]])
 
                 self.ImageDict[exp][key].append(img)
                 self.image_wet_norm[exp][key].append(wet_tmp)
                 self.image_dry_norm[exp][key].append(dry_tmp)
+
+    def pad_im(self,img):
+        xsize, ysize = img.shape
+        padx = self.padsize - xsize;
+        pady = self.padsize - ysize
+
+        return np.pad(img, ((padx // 2, padx // 2), (pady // 2, pady // 2)), constant_values=0, mode='constant')
+
 
     def get_norm_vals(self,image,exp):
 

@@ -21,8 +21,8 @@ class PlantDataset(Dataset,nn.Module):
                 meta_sample,meta_label= [],[]
                 for sample,label,wet_norm,dry_norm in zip(list(samples),list(next_labels),list(next_wet_norm),list(next_dry_norm)):
                     #Apply transforms on samples
-                    if Transforms:
-                        sample= Transforms(np.uint8(sample))
+                    # if Transforms:
+                    #     sample= Transforms(np.uint8(sample))
 
                     sample= self.norm_im(data= sample, wet= wet_norm, dry= dry_norm)
                     to_tensor= torchvision.transforms.ToTensor()

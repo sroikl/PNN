@@ -24,8 +24,8 @@ def train_model(model, dataloaders, criterion, optimizer, scheduler, device, num
             # Iterate over data.
             with tqdm.tqdm(total=len(dataloaders[phase]),desc=f'{phase}') as pbar:
                 for inputs, labels in dataloaders[phase]:
-                    inputs = inputs.to(device)
-                    labels = labels.to(device)
+                    inputs = inputs.transpose(0,1).double().to(device)
+                    labels = labels.transpose(0,1).double().to(device)
 
                     # zero the parameter gradients
                     optimizer.zero_grad()
@@ -33,7 +33,7 @@ def train_model(model, dataloaders, criterion, optimizer, scheduler, device, num
                     # forward
                     # track history if only in train
                     with torch.set_grad_enabled(phase == 'train'):
-                        outputs = model(inputs.squeeze())
+                        outputs = model(inputs)
                         loss = criterion(outputs, labels)
 
                         # backward + optimize only if in training phase
@@ -80,20 +80,21 @@ def eval_model(model, dataloaders, criterion, optimizer, scheduler, device, num_
             # Iterate over data.
             with tqdm.tqdm(total=len(dataloaders[phase]),desc=f'{phase}') as pbar:
                 for inputs, labels in dataloaders[phase]:
-                    inputs = inputs.to(device)
-                    labels = labels.to(device)
-
+                    inputs = inputs.transpose(0, 1).double().to(device)
+                    labels = labels.transpose(0, 1).double().to(device)
                     # zero the parameter gradients
                     optimizer.zero_grad()
 
                     # forward
                     # track history if only in train
                     with torch.set_grad_enabled(phase == 'train'):
-                        outputs = model(inputs.squeeze())
+                        outputs = model(inputs)
                         loss = criterion(outputs, labels)
 
                     # statistics
                     running_loss.append(loss.item())
+                    pbar.set_description(f'{phase} ({loss.item():.3f})')
+                    pbar.update()
 
             epoch_loss = np.sum(running_loss) / len(dataloaders[phase])
 
