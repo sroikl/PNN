@@ -33,7 +33,6 @@ class CollectData:
 
     def Collect_Data_from_Image(self,date,exp):
         potential_file= glob.glob(self.dataloc_dict[exp] + date + '**/*.tiff')
-
         if potential_file:
             image= plt.imread(potential_file[0])
             dry_tmp,wet_tmp= self.get_norm_vals(exp= exp,image=image)
@@ -110,8 +109,15 @@ class CollectData:
                 for time_point,label in zip(time,labels):
 
                     self.LabelDict[exp][labels_csv.columns.values[col_num].lower()].append(label)
-                    self.DateDict[exp][labels_csv.columns.values[col_num].lower()].append(
-                            ''.join((time_point.split()[0].replace('-','_'),'_',time_point.split()[1].replace(':','_'))))
+                    sec_member= '_'
+                    if '-' in time_point.split()[0]:
+                        thirt_member= time_point.split()[1].replace(':','_')
+                        first_member= time_point.split()[0].replace('-','_')
+                    elif '/' in time_point.split()[0]:
+                        first_member = time_point.split()[0].replace('/', '_')
+                        thirt_member = time_point.split()[1].replace(':', '_') +'_00'
+
+                    self.DateDict[exp][labels_csv.columns.values[col_num].lower()].append(''.join((first_member,sec_member,thirt_member)))
                     pbar.update()
 
 

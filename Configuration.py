@@ -35,12 +35,14 @@ norm_map= {'exp3':exp3_norm_map,'exp1000':exp1000_norm_map}
 
 # exp3_dataloc= '/Users/roiklein/Desktop/PNN/Example DB/'
 # exp3_labelloc= '/Users/roiklein/Desktop/PNN/DL_TC_EXP_3-5_short.csv'
-#
+# exp3_labelloc= '/Users/roiklein/Desktop/PNN/DL_TC_EXP_3-5.csv'
+
 exp1000_dataloc = expanduser('~/Exp1000/')
 exp1000_labelloc = expanduser('~/PNN-AI/lys_prc.csv')
 #
 exp3_dataloc= expanduser('~/Exp3_5/')
 exp3_labelloc= expanduser('~/PNN/DL_TC_EXP_3-5_short.csv')
+# exp3_labelloc= expanduser('~/PNN/DL_TC_EXP_3-5.csv')
 
 # SAVE_DIR = expanduser('~/PNN-AI/')
 
