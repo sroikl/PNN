@@ -16,6 +16,7 @@ def train_model(model, dataloaders, criterion, optimizer, scheduler, device, num
         for phase in ['train', 'val']:
             if phase == 'train':
                 model.train()  # Set model to training mode
+                scheduler.step()
             else:
                 model.eval()  # Set model to evaluate mode
 

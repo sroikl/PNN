@@ -15,10 +15,13 @@ exp3_pixelmap= {'lys_1':((508,578),(26,76)),'lys_2':((512,582),(75,135)),'lys_3'
                 'lys_5':((516,586),(264,324)),'lys_6':((516,586),(318,378)),'lys_7':((515,585),(370,430)),'lys_8':((512,582),(425,485)),
                 'lys_9':((388,458),(22,82)),'lys_10':((391,461),(84,144)),'lys_11':((390,460),(137,197)),'lys_12':((404,474),(187,247)),
                 'lys_13':((411,481),(265,325)),'lys_14':((403,473),(320,380)),'lys_15':((410,470),(381,441)),'lys_16':((407,467),(431,491)),
-                'lys_17':((184,254),(38,98)),'lys_18':((180,250),(94,154)),'lys_19':((180,250),(151,211)),'lys_20':((185,255),(207,267)),
-                'lys_21':((192,262),(276,336)),'lys_22':((190,260),(335,395)),'lys_23':((184,254),(386,446)),'lys_24':((190,260),(440,500)),
-                'lys_25':((61,131),(41,101)),'lys_26':((63,133),(196,156)),'lys_27':((56,126),(145,205)),'lys_28':((67,137),(203,263)),
-                'lys_29':((63,133),(278,338)),'lys_30':((65,135),(335,395)),'lys_31':((67,137),(388,448)),'lys_32':((69,139),(448,508))}
+                'lys_17': ((184, 254), (38, 98)), 'lys_18': ((180, 250), (94, 154)), 'lys_19': ((180, 250), (151, 211)),
+                'lys_20':((185,255),(207,267)),'lys_21':((192,262),(276,336)),'lys_22':((190,260),(335,395)),'lys_23':((184,254),(386,446)),
+                'lys_24':((190,260),(440,500)),'lys_25':((61,131),(41,101)),'lys_26':((63,133),(196,156)),'lys_27':((56,126),(145,205)),
+                'lys_28':((67,137),(203,263)),'lys_29':((63,133),(278,338)),'lys_30':((65,135),(335,395)),'lys_31':((67,137),(388,448)),
+                'lys_32':((69,139),(448,508))}
+
+# 'lys_17': ((184, 254), (38, 98)), 'lys_18': ((180, 250), (94, 154)), 'lys_19': ((180, 250), (151, 211)),
 
 pixelmap= {'exp1000':exp1000_pixelmap,'exp3':exp3_pixelmap}
 
@@ -29,15 +32,15 @@ norm_map= {'exp3':exp3_norm_map,'exp1000':exp1000_norm_map}
 
 # exp1000_dataloc= "//Users/roiklein/Dropbox/Msc Project/Deep Learning Project/Exp1000_Full/"
 # exp1000_labelloc= '/Users/roiklein/Dropbox/Msc Project/Deep Learning Project/lys_prc.csv'
-#
-# exp3_dataloc= '/Users/roiklein/Desktop/PNN/Example DB/'
-# exp3_labelloc= '/Users/roiklein/Desktop/PNN/DL_TC_EXP_3-5.csv'
 
+# exp3_dataloc= '/Users/roiklein/Desktop/PNN/Example DB/'
+# exp3_labelloc= '/Users/roiklein/Desktop/PNN/DL_TC_EXP_3-5_short.csv'
+#
 exp1000_dataloc = expanduser('~/Exp1000/')
 exp1000_labelloc = expanduser('~/PNN-AI/lys_prc.csv')
 #
 exp3_dataloc= expanduser('~/Exp3_5/')
-exp3_labelloc= expanduser('~/PNN/DL_TC_EXP_3-5.csv')
+exp3_labelloc= expanduser('~/PNN/DL_TC_EXP_3-5_short.csv')
 
 # SAVE_DIR = expanduser('~/PNN-AI/')
 
@@ -58,6 +61,6 @@ exp_args= dict(num_epochs= 500, lr= 1e-4, embedding_dim= 2048,tcn_num_levels= 5,
 
 line_dict= {'exp3':{'line1':['lys_7','lys_13','lys_20','lys_22','lys_28'],'line2':['lys_4','lys_12','lys_14','lys_23','lys_30'],
                     'line3':['lys_1','lys_10','lys_16','lys_25','lys_31'],'line4':['lys_3','lys_6','lys_21','lys_26','lys_32'],
-                    'line5':['lys_2','lys_8','lys_9','lys_24','lys_27'],'line6':['lys_5','lys_11','lys_15','lys_17','lys_29']},
+                    'line5':['lys_2','lys_8','lys_9','lys_24','lys_27'],'line6':['lys_5','lys_11','lys_15','lys_29']},
             'exp1000':{'line7':['lys1','lys2','lys3','lys4','lys5','lys6','lys7','lys8','lys9','lys10']}}
             # 'exp1000':{'line1':[]}}

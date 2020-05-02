@@ -57,14 +57,17 @@ def RunExpirement(train_lines:list,test_lines:list):
                      embedding_size= exp_args['embedding_dim'],kernel_size=exp_args['tcn_kernel_size'],
                      dropout= exp_args['tcn_dropout'],encoder_name='Inception').double().to(device=device)
 
-    if torch.cuda.device_count() > 1:
+    if torch.cuda.device_count() >= 1:
         print("Let's use", torch.cuda.device_count(), "GPUs!")
         model = torch.nn.DataParallel(model)
 
-    optimizer= torch.optim.Adam(params= model.parameters(),lr= exp_args['lr'])
+    params_non_frozen = filter(lambda p: p.requires_grad, model.parameters())
+    optimizer= torch.optim.Adam(params= params_non_frozen ,lr= exp_args['lr'])
+    lr_sched = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer=optimizer, factor=0.05, patience=5, )
+
     criterion= torch.nn.MSELoss(reduction='mean').to(device=device)
 
-    best_model,train_loss_list,val_lost_list= train_model(model=model, optimizer=optimizer,dataloaders= dataloaders,scheduler=None,device=device,
+    best_model,train_loss_list,val_lost_list= train_model(model=model, optimizer=optimizer,dataloaders= dataloaders,scheduler=lr_sched,device=device,
                             criterion=criterion, num_epochs= exp_args['num_epochs'])
 
     test_loss= eval_model(model= best_model, dataloaders= dataloaders, criterion= criterion, optimizer= optimizer,

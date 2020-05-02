@@ -108,6 +108,7 @@ class CollectData:
             for col_num in range(1,len(labels_csv.columns)-2):
                 labels= np.asarray(labels_csv.iloc[:,col_num].interpolate(method='quadratic'))
                 for time_point,label in zip(time,labels):
+
                     self.LabelDict[exp][labels_csv.columns.values[col_num].lower()].append(label)
                     self.DateDict[exp][labels_csv.columns.values[col_num].lower()].append(
                             ''.join((time_point.split()[0].replace('-','_'),'_',time_point.split()[1].replace(':','_'))))
