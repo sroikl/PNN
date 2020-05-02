@@ -14,8 +14,8 @@ def RunExpirement(train_lines:list,test_lines:list):
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
     #Collect all the data from all available exp's
-    DataObject= CollectData(dataloc_dict= dataloc_dict, labelloc_dict= labelloc_dict,
-                            list_of_exp= list_of_exp, list_of_keys= list_of_keys,pad_size= 300)
+    DataObject= CollectData(dataloc_dict= dataloc_dict, labelloc_dict= labelloc_dict,list_of_exp= list_of_exp, list_of_keys= list_of_keys,
+                            pad_size= 300,start_date= exp_args['start_date'],end_date=exp_args['end_date'])
 
 
     Transforms= transforms.Compose([transforms.ToPILImage(),transforms.Resize((300,300))])

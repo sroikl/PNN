@@ -34,15 +34,13 @@ norm_map= {'exp3':exp3_norm_map,'exp1000':exp1000_norm_map}
 # exp1000_labelloc= '/Users/roiklein/Dropbox/Msc Project/Deep Learning Project/lys_prc.csv'
 
 # exp3_dataloc= '/Users/roiklein/Desktop/PNN/Example DB/'
-# exp3_labelloc= '/Users/roiklein/Desktop/PNN/DL_TC_EXP_3-5_short.csv'
 # exp3_labelloc= '/Users/roiklein/Desktop/PNN/DL_TC_EXP_3-5.csv'
 
 exp1000_dataloc = expanduser('~/Exp1000/')
 exp1000_labelloc = expanduser('~/PNN-AI/lys_prc.csv')
-#
+
 exp3_dataloc= expanduser('~/Exp3_5/')
-exp3_labelloc= expanduser('~/PNN/DL_TC_EXP_3-5_short.csv')
-# exp3_labelloc= expanduser('~/PNN/DL_TC_EXP_3-5.csv')
+exp3_labelloc= expanduser('~/PNN/DL_TC_EXP_3-5.csv')
 
 # SAVE_DIR = expanduser('~/PNN-AI/')
 
@@ -59,7 +57,7 @@ list_of_keys= [['lys1','lys2','lys3','lys4','lys5','lys6','lys7','lys8','lys9','
 
 
 exp_args= dict(num_epochs= 500, lr= 1e-4, embedding_dim= 2048,tcn_num_levels= 5, tcn_hidden_channels= 1000,
-           tcn_kernel_size=5,tcn_dropout= 0.25,batch_size= 16)
+           tcn_kernel_size=5,tcn_dropout= 0.25,batch_size= 16, start_date = '2020-03-17-00-00-00', end_date= '2020-03-24-00-00-00')
 
 line_dict= {'exp3':{'line1':['lys_7','lys_13','lys_20','lys_22','lys_28'],'line2':['lys_4','lys_12','lys_14','lys_23','lys_30'],
                     'line3':['lys_1','lys_10','lys_16','lys_25','lys_31'],'line4':['lys_3','lys_6','lys_21','lys_26','lys_32'],

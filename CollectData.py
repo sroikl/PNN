@@ -5,11 +5,19 @@ import pandas as pd
 import Configuration as cfg
 import glob
 from matplotlib import pyplot as plt
-
+from datetime import datetime
 class CollectData:
-    def __init__(self,dataloc_dict:dict,labelloc_dict:dict,list_of_exp:list,list_of_keys:list,pad_size:int):
+    def __init__(self,dataloc_dict:dict,labelloc_dict:dict,list_of_exp:list,list_of_keys:list,pad_size:int,start_date:str,end_date:str):
 
         self.padsize= pad_size
+        strt_date_components= start_date.split('-')
+        self.strt_date= datetime(int(strt_date_components[0]), int(strt_date_components[1]), int(strt_date_components[2]),
+                         int(strt_date_components[3]), int(strt_date_components[4]),int(strt_date_components[5]))
+
+        end_date_components= end_date.split('-')
+        self.end_date= datetime(int(end_date_components[0]), int(end_date_components[1]), int(end_date_components[2]),
+                         int(end_date_components[3]), int(end_date_components[4]),int(end_date_components[4]))
+
         self.dataloc_dict= dataloc_dict
         self.labelloc_dict= labelloc_dict
         self.ImageDict, self.LabelDict,self.DateDict,self.image_wet_norm,self.image_dry_norm= \
@@ -33,6 +41,7 @@ class CollectData:
 
     def Collect_Data_from_Image(self,date,exp):
         potential_file= glob.glob(self.dataloc_dict[exp] + date + '**/*.tiff')
+
         if potential_file:
             image= plt.imread(potential_file[0])
             dry_tmp,wet_tmp= self.get_norm_vals(exp= exp,image=image)
@@ -110,14 +119,12 @@ class CollectData:
 
                     self.LabelDict[exp][labels_csv.columns.values[col_num].lower()].append(label)
                     sec_member= '_'
-                    if '-' in time_point.split()[0]:
-                        thirt_member= time_point.split()[1].replace(':','_')
-                        first_member= time_point.split()[0].replace('-','_')
-                    elif '/' in time_point.split()[0]:
-                        first_member = time_point.split()[0].replace('/', '_')
-                        thirt_member = time_point.split()[1].replace(':', '_') +'_00'
-
-                    self.DateDict[exp][labels_csv.columns.values[col_num].lower()].append(''.join((first_member,sec_member,thirt_member)))
+                    thirt_member= time_point.split()[1].replace(':','_')
+                    first_member= time_point.split()[0].replace('-','_')
+                    date_compare=datetime(int(first_member.split('_')[0]),int(first_member.split('_')[1]),int(first_member.split('_')[2]),
+                                          int(thirt_member.split('_')[0]),int(thirt_member.split('_')[1]),int(thirt_member.split('_')[2]))
+                    if date_compare >= self.strt_date and date_compare <= self.end_date:
+                        self.DateDict[exp][labels_csv.columns.values[col_num].lower()].append(''.join((first_member,sec_member,thirt_member)))
                     pbar.update()
 
 
