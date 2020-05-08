@@ -17,7 +17,7 @@ def RunExpirement(train_lines:list,test_lines:list):
 
 
     model= Encoder().to(device=device)
-    Transforms= transforms.Compose([transforms.ToPILImage(),transforms.Resize((300,300))])
+    Transforms= transforms.Compose([transforms.ToPILImage(),transforms.Resize((300,300)),transforms.ToTensor()])
 
     Embeddings_Dict= {}
     for exp in line_dict.keys():
@@ -34,7 +34,7 @@ def RunExpirement(train_lines:list,test_lines:list):
                 with tqdm.tqdm(total=len(dl_),desc=f'Embedding Plant {plant}') as pbar:
                     for x,y in dl_:
                         embeddings= model(x)
-                        Embeddings_Dict[exp][line][plant].append((embeddings,y))
+                        Embeddings_Dict[exp][line][plant].append((embeddings.squeeze(dim=1),y))
                         pbar.update()
                 pbar.close()
 
