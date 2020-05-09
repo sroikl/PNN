@@ -6,9 +6,9 @@ import torchvision
 import tqdm
 import matplotlib.pyplot as plt
 
-class PlantDataset(Dataset,nn.Module):
-    def __init__(self,file_list,label_list,image_wet_norm,image_dry_norm,Transforms= None,desc= 'Train'):
-        super(PlantDataset,self).__init__()
+class EmbeddingsDataset(Dataset,nn.Module):
+    def __init__(self,file_list,label_list,image_wet_norm,image_dry_norm,Transforms= None):
+        super(EmbeddingsDataset,self).__init__()
         self.sampels= []
 
         for sample,label,wet_norm,dry_norm in zip(file_list,label_list,image_wet_norm,image_dry_norm):
@@ -33,3 +33,23 @@ class PlantDataset(Dataset,nn.Module):
         data[data < 0] = 10
 
         return data
+
+class PlantDataset(Dataset):
+    def __init__(self,samples,labels,Transforms):
+        super(PlantDataset,self).__init__()
+
+        self.samples= []
+
+        for sample,label in zip(samples,labels):
+
+            if Transforms:
+                sample= Transforms(sample)
+
+            self.samples.append((sample,label))
+
+    def __len__(self):
+        return len(self.samples)
+
+    def __getitem__(self, idx):
+        return self.samples[idx]
+

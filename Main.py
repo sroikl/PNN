@@ -7,50 +7,49 @@ from torchvision import transforms
 import os
 import torch
 from torch.utils.data import random_split,DataLoader
-import numpy as np
-
+from Create_Embeddings import Create_Embeddings
+import pickle
 def RunExpirement(train_lines:list,test_lines:list):
 
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    if os.path.exists(f'{os.getcwd()}/Datasets.pkl'):
+        print('====== Loading Embeddings ======\n')
+        with open(f'{os.getcwd()}/Datasets.pkl','rb') as f:
+            Embeddings_Dict= pickle.load(f)
+    else:
+        Embeddings_Dict= Create_Embeddings()
 
-    #Collect all the data from all available exp's
-    DataObject= CollectData(dataloc_dict= dataloc_dict, labelloc_dict= labelloc_dict,list_of_exp= list_of_exp, list_of_keys= list_of_keys,
-                            pad_size= 300,start_date= exp_args['start_date'],end_date=exp_args['end_date'])
 
+    train_sampels,train_labels= [],[]
+    test_sampels, test_labels= [],[]
 
-    Transforms= transforms.Compose([transforms.ToPILImage(),transforms.Resize((300,300))])
-    #Parse the data per lines
-    train_sampels,train_labels,train_wet_norms,train_dry_norms= [],[],[],[]
-    test_sampels, test_labels, test_wet_norms, test_dry_norms = [], [], [], []
-    for exp in line_dict.keys():
-        for line in line_dict[exp].keys():
-            for plant in line_dict[exp][line]:
-                sampels= DataObject.ImageDict[exp][plant] ; labels= DataObject.LabelDict[exp][plant]
-                wet_norms= DataObject.image_wet_norm[exp][plant] ; dry_norms= DataObject.image_dry_norm[exp][plant]
+    print('====== Unpacking Embeddings ======\n')
+    for exp in Embeddings_Dict.keys():
+        for line in Embeddings_Dict[exp].keys():
+            for plant in Embeddings_Dict[exp][line].keys():
+                samples,labels= zip(*Embeddings_Dict[exp][line][plant]) # list of tuples
                 if line in train_lines:
-                    train_sampels.append(sampels)
-                    train_labels.append(labels)
-                    train_wet_norms.append(wet_norms)
-                    train_dry_norms.append(dry_norms)
+                    train_sampels.append(samples) ; train_labels.append(labels)
                 elif line in test_lines:
-                    test_sampels.append(sampels)
-                    test_labels.append(labels)
-                    test_wet_norms.append(wet_norms)
-                    test_dry_norms.append(dry_norms)
+                    test_sampels.append(samples) ; test_labels.append(labels)
 
-    dataset_train= PlantDataset(file_list= train_sampels , label_list= train_labels, image_wet_norm= train_wet_norms,
-                                image_dry_norm= train_dry_norms, Transforms= Transforms,desc= 'Build Train Dataset')
-    dataset_test= PlantDataset(file_list= test_sampels, label_list= test_labels, image_wet_norm= test_wet_norms,
-                               image_dry_norm= test_dry_norms, Transforms= Transforms,desc= 'Build Test Dataset')
+    train_sampels = lambda train_sampels: [item for sublist in train_sampels for item in sublist]
+    train_labels= lambda train_labels: [item for sublist in train_labels for item in sublist]
+
+    test_samples= lambda test_samples: [item for sublist in test_samples for item in sublist]
+    test_labels= lambda test_labels: [item for sublist in test_labels for item in sublist]
+
+    dataset_train= PlantDataset(samples= train_sampels , labels= train_labels,Transforms= None)
+    dataset_test= PlantDataset(samples= test_samples, labels= test_labels, Transforms= None)
 
     lenDataset = len(dataset_train)
     lenTrainset = int(lenDataset * 0.9)
     lenValset = lenDataset- lenTrainset
     train_set, val_set = random_split(dataset_train, [lenTrainset, lenValset])
 
-    dataloaders = {'train': DataLoader(train_set,batch_size= exp_args['batch_size'],shuffle= False,drop_last=True),
-                   'val': DataLoader(val_set,batch_size= exp_args['batch_size'],shuffle= False,drop_last=True),
-                   'test': DataLoader(dataset_test,batch_size= exp_args['batch_size'],shuffle= False,drop_last=True)}
+    dataloaders = {'train': DataLoader(train_set,batch_size= exp_args['batch_size'],shuffle= True,drop_last=True),
+                   'val': DataLoader(val_set,batch_size= exp_args['batch_size'],shuffle= True,drop_last=True),
+                   'test': DataLoader(dataset_test,batch_size= exp_args['batch_size'],shuffle= True,drop_last=True)}
 
     print('====== Building Model ======')
     model= TCN_Model(num_levels= exp_args['tcn_num_levels'], num_hidden= exp_args['tcn_hidden_channels'],
