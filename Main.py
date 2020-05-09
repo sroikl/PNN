@@ -33,11 +33,11 @@ def RunExpirement(train_lines:list,test_lines:list):
                 elif line in test_lines:
                     test_sampels.append(samples) ; test_labels.append(labels)
 
-    train_sampels = lambda train_sampels: [item for sublist in train_sampels for item in sublist]
-    train_labels= lambda train_labels: [item for sublist in train_labels for item in sublist]
+    train_sampels = list(lambda train_sampels: [item for sublist in train_sampels for item in sublist])
+    train_labels= list(lambda train_labels: [item for sublist in train_labels for item in sublist])
 
-    test_samples= lambda test_samples: [item for sublist in test_samples for item in sublist]
-    test_labels= lambda test_labels: [item for sublist in test_labels for item in sublist]
+    test_samples= list(lambda test_samples: [item for sublist in test_samples for item in sublist])
+    test_labels= list(lambda test_labels: [item for sublist in test_labels for item in sublist])
 
     dataset_train= PlantDataset(samples= train_sampels , labels= train_labels,Transforms= None)
     dataset_test= PlantDataset(samples= test_samples, labels= test_labels, Transforms= None)
