@@ -1,7 +1,6 @@
 from Training import train_model,eval_model
 from Model import TCN_Model
-from CollectData import CollectData
-from Configuration import exp_args,line_dict,dataloc_dict,labelloc_dict,list_of_exp,list_of_keys
+from Configuration import exp_args
 from PlantDataset import PlantDataset
 from torchvision import transforms
 import os
@@ -9,6 +8,7 @@ import torch
 from torch.utils.data import random_split,DataLoader
 from Create_Embeddings import Create_Embeddings
 import pickle
+import itertools
 def RunExpirement(train_lines:list,test_lines:list):
 
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -32,12 +32,11 @@ def RunExpirement(train_lines:list,test_lines:list):
                     train_sampels.append(samples) ; train_labels.append(labels)
                 elif line in test_lines:
                     test_sampels.append(samples) ; test_labels.append(labels)
+    train_sampels= list(itertools.chain(*train_sampels))
+    train_labels= list(itertools.chain(*train_labels))
 
-    train_sampels = list(lambda train_sampels: [item for sublist in train_sampels for item in sublist])
-    train_labels= list(lambda train_labels: [item for sublist in train_labels for item in sublist])
-
-    test_samples= list(lambda test_samples: [item for sublist in test_samples for item in sublist])
-    test_labels= list(lambda test_labels: [item for sublist in test_labels for item in sublist])
+    test_samples= list(itertools.chain(*test_sampels))
+    test_labels= list(itertools.chain(*test_labels))
 
     dataset_train= PlantDataset(samples= train_sampels , labels= train_labels,Transforms= None)
     dataset_test= PlantDataset(samples= test_samples, labels= test_labels, Transforms= None)
