@@ -85,7 +85,7 @@ class Classifier(nn.Module):
         return self.classifier(x)
 
 class TCN_Model(nn.Module):
-    def __init__(self,num_levels: int, num_hidden: int , embedding_size: int, kernel_size, dropout,encoder_name= 'Inception'):
+    def __init__(self,num_levels: int, num_hidden: int , embedding_size: int, kernel_size, dropout):
         super().__init__()
 
         self.TCN= TCN(num_levels=num_levels,num_hidden=num_hidden,embedding_size=embedding_size,kernel_size=kernel_size,

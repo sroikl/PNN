@@ -31,7 +31,7 @@ def Create_Embeddings():
                 wet_norms= DataObject.image_wet_norm[exp][plant] ; dry_norms= DataObject.image_dry_norm[exp][plant]
                 dataset_= EmbeddingsDataset(file_list= sampels , label_list= labels, image_wet_norm= wet_norms,
                                        image_dry_norm= dry_norms, Transforms= Transforms)
-                dl_= DataLoader(dataset= dataset_, batch_size=16, shuffle=False, drop_last=True)
+                dl_= DataLoader(dataset= dataset_, batch_size=exp_args['TimeWindow'], shuffle=False, drop_last=True)
                 with tqdm.tqdm(total=len(dl_),desc=f'Embedding Plant {plant}') as pbar:
                     for x,y in dl_:
                         embeddings= model(x)

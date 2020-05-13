@@ -9,6 +9,7 @@ from torch.utils.data import random_split,DataLoader
 from Create_Embeddings import Create_Embeddings
 import pickle
 import itertools
+
 def RunExpirement(train_lines:list,test_lines:list):
 
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -50,12 +51,16 @@ def RunExpirement(train_lines:list,test_lines:list):
                    'val': DataLoader(val_set,batch_size= exp_args['batch_size'],shuffle= True,drop_last=True),
                    'test': DataLoader(dataset_test,batch_size= exp_args['batch_size'],shuffle= True,drop_last=True)}
 
-    print('====== Building Model ======')
+    X,y= next(iter(dataloaders['train']))
+    print(f'Shape of Input Tensor: {X.shape}\n')
+    print(f'Shape of Label Tensor: {y.shape}\n')
+
+    print('====== Building Model ======\n')
     model= TCN_Model(num_levels= exp_args['tcn_num_levels'], num_hidden= exp_args['tcn_hidden_channels'],
                      embedding_size= exp_args['embedding_dim'],kernel_size=exp_args['tcn_kernel_size'],
                      dropout= exp_args['tcn_dropout'],encoder_name='Inception').double().to(device=device)
 
-    if torch.cuda.device_count() >= 1:
+    if torch.cuda.device_count() >= 0:
         print("Let's use", torch.cuda.device_count(), "GPUs!")
         model = torch.nn.DataParallel(model)
 
