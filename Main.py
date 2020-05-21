@@ -58,7 +58,7 @@ def RunExpirement(train_lines:list,test_lines:list):
     print('====== Building Model ======\n')
     model= TCN_Model(num_levels= exp_args['tcn_num_levels'], num_hidden= exp_args['tcn_hidden_channels'],
                      embedding_size= exp_args['embedding_dim'],kernel_size=exp_args['tcn_kernel_size'],
-                     dropout= exp_args['tcn_dropout'],encoder_name='Inception').double().to(device=device)
+                     dropout= exp_args['tcn_dropout']).double().to(device=device)
 
     if torch.cuda.device_count() >= 0:
         print("Let's use", torch.cuda.device_count(), "GPUs!")

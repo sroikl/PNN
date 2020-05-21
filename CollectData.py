@@ -86,14 +86,15 @@ class CollectData:
         minutes = np.asarray(labels_csv['minute'], dtype='int8')
 
         # === Uploading the labels ===
-        labels = np.asarray(labels_csv['ET'].interpolate(method='quadratic'))
-        labels-= min(labels)
-        labels/= max(labels)
+        labels = np.asarray(labels_csv['ET'].interpolate(method='quadratic').fillna(0))
+        labels -= labels.min()
+        labels /= max(labels)
+        labels *= 100
         plant_labels = labels_csv['lysimeter']
         len_labels= len(labels)
         with tqdm.tqdm(total= len_labels, desc=f'{exp} label collecting') as pbar:
             for min,hr,date,label,idx in zip(minutes,hours,dates,labels,range(len(plant_labels))):
-                self.LabelDict[exp][plant_labels[idx]].append(label*100)
+                self.LabelDict[exp][plant_labels[idx]].append(label)
                 self.DateDict[exp][plant_labels[idx]].append(str(date).replace('-', '_') + '_{num:02d}_'.format(
                     num=hr) + '{num:02d}'.format(num=min))
                 pbar.update()
@@ -108,12 +109,13 @@ class CollectData:
 
         with tqdm.tqdm(total= len_col*32, desc=f'{exp} collecting') as pbar:
             for col_num in range(1,len(labels_csv.columns)-2):
-                labels= np.asarray(labels_csv.iloc[:,col_num].interpolate(method='quadratic'))
-                labels-= min(labels)
+                labels= np.asarray(labels_csv.iloc[:,col_num].interpolate(method='quadratic').fillna(0.))
+                labels-= labels.min()
                 labels/= max(labels)
+                labels *= 100
                 for time_point,label in zip(time,labels):
 
-                    self.LabelDict[exp][labels_csv.columns.values[col_num].lower()].append(label*100)
+                    self.LabelDict[exp][labels_csv.columns.values[col_num].lower()].append(label)
                     sec_member= '_'
                     thirt_member= time_point.split()[1].replace(':','_')
                     first_member= time_point.split()[0].replace('-','_')
