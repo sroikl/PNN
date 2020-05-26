@@ -2,14 +2,15 @@ from Training import train_model,eval_model
 from Model import TCN_Model
 from Configuration import exp_args
 from PlantDataset import PlantDataset
-from torchvision import transforms
 import os
 import torch
 from torch.utils.data import random_split,DataLoader
 from Create_Embeddings import Create_Embeddings
 import pickle
 import itertools
-
+import tqdm
+import numpy as np
+from sklearn.preprocessing import StandardScaler
 def RunExpirement(train_lines:list,test_lines:list):
 
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -38,9 +39,18 @@ def RunExpirement(train_lines:list,test_lines:list):
 
     test_samples= list(itertools.chain(*test_sampels))
     test_labels= list(itertools.chain(*test_labels))
+    with tqdm.tqdm(total= len(train_sampels), desc='Fitting Standart Scaler') as pbar:
+        data= np.concatenate((train_sampels[0].numpy(),train_sampels[1].numpy()),axis=1)
+        for i in range(1,len(train_sampels)):
+            data= np.concatenate((data,train_sampels[i]))
+            pbar.update()
+    scaler= StandardScaler(data)
+    print(f'Size of Standart Scaler mean vector:{len(scaler.mean_)}')
+    print(f'Size of Standart Scaler Var vector:{len(scaler.var_)}')
 
-    dataset_train= PlantDataset(samples= train_sampels , labels= train_labels,Transforms= None)
-    dataset_test= PlantDataset(samples= test_samples, labels= test_labels, Transforms= None)
+
+    dataset_train= PlantDataset(samples= train_sampels , labels= train_labels,Transforms= None,scaler=scaler)
+    dataset_test= PlantDataset(samples= test_samples, labels= test_labels, Transforms= None,scaler=scaler)
 
     lenDataset = len(dataset_train)
     lenTrainset = int(lenDataset * 0.9)
@@ -66,7 +76,7 @@ def RunExpirement(train_lines:list,test_lines:list):
 
     params_non_frozen = filter(lambda p: p.requires_grad, model.parameters())
     optimizer= torch.optim.Adam(params= params_non_frozen ,lr= exp_args['lr'])
-    lr_sched = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer=optimizer, factor=0.05, patience=5, )
+    lr_sched = torch.optim.lr_scheduler.StepLR(optimizer, step_size=20, gamma=0.5)
 
     criterion= torch.nn.MSELoss(reduction='mean').to(device=device)
 

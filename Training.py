@@ -16,7 +16,7 @@ def train_model(model, dataloaders, criterion, optimizer, scheduler, device, num
         for phase in ['train', 'val']:
             if phase == 'train':
                 model.train()  # Set model to training mode
-                scheduler.step()
+                # scheduler.step()
             else:
                 model.eval()  # Set model to evaluate mode
 
@@ -63,6 +63,7 @@ def train_model(model, dataloaders, criterion, optimizer, scheduler, device, num
                 val_lost_list.append(epoch_loss)
 
     # load best model weights
+    scheduler.step()
     model.load_state_dict(best_model_wts)
     return model,train_loss_list,val_lost_list
 

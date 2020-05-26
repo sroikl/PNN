@@ -76,9 +76,9 @@ class Classifier(nn.Module):
     def __init__(self,embedding_size):
         super(Classifier,self).__init__()
         self.classifier= nn.Sequential(
-                        nn.Linear(in_features=embedding_size,out_features=512),nn.LeakyReLU(negative_slope=0.1),
-                        nn.Linear(in_features=512,out_features= 128),nn.LeakyReLU(negative_slope=0.1),
-                        nn.Linear(in_features=128,out_features=32),nn.LeakyReLU(negative_slope=0.1),
+                        nn.Linear(in_features=embedding_size,out_features=512),nn.ReLU(),
+                        nn.Linear(in_features=512,out_features= 128),nn.ReLU(),
+                        nn.Linear(in_features=128,out_features=32),nn.ReLU(),
                         nn.Linear(in_features= 32, out_features= 1)
         )
     def forward(self, x):

@@ -35,7 +35,7 @@ class EmbeddingsDataset(Dataset,nn.Module):
         return data
 
 class PlantDataset(Dataset):
-    def __init__(self,samples,labels,Transforms):
+    def __init__(self,samples,labels,Transforms,scaler):
         super(PlantDataset,self).__init__()
 
         self.samples= []
@@ -44,6 +44,9 @@ class PlantDataset(Dataset):
 
             if Transforms:
                 sample= Transforms(sample)
+
+            if scaler:
+                sample= scaler.transform(sample)
 
             self.samples.append((sample,label))
 
