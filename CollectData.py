@@ -113,6 +113,7 @@ class CollectData:
                 labels-= labels.min()
                 labels/= max(labels)
                 labels *= 100
+
                 for time_point,label in zip(time,labels):
 
                     self.LabelDict[exp][labels_csv.columns.values[col_num].lower()].append(label)
