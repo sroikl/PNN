@@ -11,6 +11,7 @@ import itertools
 import tqdm
 import numpy as np
 from sklearn.preprocessing import StandardScaler
+from TrainingOldVersion import TCNTrainer
 def RunExpirement(train_lines:list,test_lines:list):
 
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -44,7 +45,8 @@ def RunExpirement(train_lines:list,test_lines:list):
         for i in range(1,len(train_sampels)):
             data= np.concatenate((data,train_sampels[i]))
             pbar.update()
-    scaler= StandardScaler(data)
+    scaler= StandardScaler()
+    scaler.fit(data)
     print(f'Size of Standart Scaler mean vector:{len(scaler.mean_)}')
     print(f'Size of Standart Scaler Var vector:{len(scaler.var_)}')
 
@@ -74,21 +76,31 @@ def RunExpirement(train_lines:list,test_lines:list):
         print("Let's use", torch.cuda.device_count(), "GPUs!")
         model = torch.nn.DataParallel(model)
 
-    params_non_frozen = filter(lambda p: p.requires_grad, model.parameters())
-    optimizer= torch.optim.Adam(params= params_non_frozen ,lr= exp_args['lr'])
+    # params_non_frozen = filter(lambda p: p.requires_grad, model.parameters())
+    optimizer= torch.optim.Adam(params= model.parameters() ,lr= exp_args['lr'])
     lr_sched = torch.optim.lr_scheduler.StepLR(optimizer, step_size=20, gamma=0.5)
 
     criterion= torch.nn.MSELoss(reduction='mean').to(device=device)
 
-    best_model,train_loss_list,val_lost_list= train_model(model=model, optimizer=optimizer,dataloaders= dataloaders,scheduler=lr_sched,device=device,
+    UseNewTraining= True
+    # UseNewTraining= False
+
+    if UseNewTraining:
+        best_model,train_loss_list,val_lost_list= train_model(model=model, optimizer=optimizer,dataloaders= dataloaders,scheduler=lr_sched,device=device,
                             criterion=criterion, num_epochs= exp_args['num_epochs'])
 
-    test_loss= eval_model(model= best_model, dataloaders= dataloaders, criterion= criterion, optimizer= optimizer,
+        test_loss= eval_model(model= best_model, dataloaders= dataloaders, criterion= criterion, optimizer= optimizer,
                           scheduler= None, device= device, num_epochs= 1)
 
-    exp_data= dict(model= best_model.state_dict(),train_loss= train_loss_list, val_loss= val_lost_list,test_loss= test_loss)
-    torch.save(exp_data,f'{os.getcwd()}/ExpData.pt')
+        exp_data= dict(model= best_model.state_dict(),train_loss= train_loss_list, val_loss= val_lost_list,test_loss= test_loss)
+        torch.save(exp_data,f'{os.getcwd()}/Results.pt')
+
+    else:
+
+        Trainer = TCNTrainer(model=model, loss_fn=criterion, optimizer=optimizer, device=device)
+        Trainer.fit(dl_train=dataloaders['train'], dl_test=dataloaders['test'], num_epochs=exp_args['num_epochs'])
 
 if __name__ =='__main__':
-    RunExpirement(train_lines=['line1','line2','line3','line4','line5'],test_lines=['line6'])
-    # RunExpirement(train_lines=['line7',],test_lines=['line1','line2','line3','line4','line5','line6'])
+    # RunExpirement(train_lines=['line1','line2','line3','line4','line5'],test_lines=['line6'])
+    RunExpirement(train_lines=['line1'], test_lines=['line2'])
+

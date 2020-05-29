@@ -76,10 +76,13 @@ class Classifier(nn.Module):
     def __init__(self,embedding_size):
         super(Classifier,self).__init__()
         self.classifier= nn.Sequential(
-                        nn.Linear(in_features=embedding_size,out_features=512),nn.ReLU(),
+                        nn.Linear(in_features= 16*embedding_size,out_features= 4*embedding_size),nn.ReLU(),
+                        nn.Dropout(p= 0.5),
+                        nn.Linear(in_features= 4*embedding_size, out_features=512), nn.ReLU(),
+                        nn.Dropout(p=0.5),
                         nn.Linear(in_features=512,out_features= 128),nn.ReLU(),
                         nn.Linear(in_features=128,out_features=32),nn.ReLU(),
-                        nn.Linear(in_features= 32, out_features= 1)
+                        nn.Linear(in_features= 32, out_features= 16)
         )
     def forward(self, x):
         return self.classifier(x)
@@ -90,15 +93,16 @@ class TCN_Model(nn.Module):
 
         self.TCN= TCN(num_levels=num_levels,num_hidden=num_hidden,embedding_size=embedding_size,kernel_size=kernel_size,
                       dropout=dropout)
-
         self.Classifier= Classifier(embedding_size= embedding_size)
+
     def forward(self,x:torch.Tensor) -> torch.Tensor:
         Features= self.TCN(x)
-        return self.Classifier(Features).squeeze(dim=2)
+        Features= Features.view(*Features.shape[:1],-1)
+        return self.Classifier(Features)
 
 if __name__=='__main__':
     model = TCN_Model(num_levels=2, num_hidden=200,
-                                 embedding_size=2048,
+                                 embedding_size=512,
                                  kernel_size=3, dropout=0.2)
-    x=torch.rand(16,8,2048)
+    x= torch.rand(16,16,2048)
     model(x)

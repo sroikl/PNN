@@ -56,8 +56,8 @@ list_of_keys= [['lys1','lys2','lys3','lys4','lys5','lys6','lys7','lys8','lys9','
 
 
 
-exp_args= dict(num_epochs= 500, lr= 1e-4, embedding_dim= 512,tcn_num_levels= 5, tcn_hidden_channels= 1024,
-           tcn_kernel_size=3 ,tcn_dropout= 0.5,TimeWindow= 16,batch_size=16, start_date = '2020-03-12-00-00-00', end_date= '2020-03-19-19-55-00')
+exp_args= dict(num_epochs= 250, lr= 1e-4, embedding_dim= 512,tcn_num_levels= 5, tcn_hidden_channels= 1024,
+           tcn_kernel_size=3 ,tcn_dropout= 0.5,TimeWindow= 16,batch_size=16, start_date = '2020-03-14-00-00-00', end_date= '2020-03-19-19-55-00')
 
 line_dict= {'exp3':{'line1':['lys_7','lys_13','lys_20','lys_22','lys_28'],'line2':['lys_4','lys_12','lys_14','lys_23','lys_30'],
                     'line3':['lys_1','lys_10','lys_16','lys_25','lys_31'],'line4':['lys_3','lys_6','lys_21','lys_26','lys_32'],

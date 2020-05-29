@@ -63,7 +63,7 @@ def train_model(model, dataloaders, criterion, optimizer, scheduler, device, num
                 val_lost_list.append(epoch_loss)
 
     # load best model weights
-    scheduler.step()
+    # scheduler.step()
     model.load_state_dict(best_model_wts)
     return model,train_loss_list,val_lost_list
 
