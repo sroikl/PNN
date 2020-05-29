@@ -41,7 +41,7 @@ def RunExpirement(train_lines:list,test_lines:list):
     test_samples= list(itertools.chain(*test_sampels))
     test_labels= list(itertools.chain(*test_labels))
     with tqdm.tqdm(total= len(train_sampels), desc='Fitting Standart Scaler') as pbar:
-        data= np.concatenate((train_sampels[0].numpy(),train_sampels[1].numpy()),axis=1)
+        data= np.concatenate((train_sampels[0].numpy(),train_sampels[1].numpy()))
         for i in range(1,len(train_sampels)):
             data= np.concatenate((data,train_sampels[i]))
             pbar.update()

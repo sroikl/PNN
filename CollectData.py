@@ -6,6 +6,7 @@ import Configuration as cfg
 import glob
 from matplotlib import pyplot as plt
 from datetime import datetime
+import copy
 class CollectData:
     def __init__(self,dataloc_dict:dict,labelloc_dict:dict,list_of_exp:list,list_of_keys:list,pad_size:int,start_date:str,end_date:str):
 
@@ -110,23 +111,42 @@ class CollectData:
         with tqdm.tqdm(total= len_col*32, desc=f'{exp} collecting') as pbar:
             for col_num in range(1,len(labels_csv.columns)-2):
                 labels= np.asarray(labels_csv.iloc[:,col_num].interpolate(method='quadratic').fillna(0.))
-                labels-= labels.min()
-                labels/= max(labels)
-                labels *= 100
+                # labels= self.N_points_MA(labels,10)
+                # labels-= labels.min()
+                # labels/= max(labels)
+                # labels *= 100
 
                 for time_point,label in zip(time,labels):
-
-                    self.LabelDict[exp][labels_csv.columns.values[col_num].lower()].append(label)
                     sec_member= '_'
                     thirt_member= time_point.split()[1].replace(':','_')
                     first_member= time_point.split()[0].replace('-','_')
                     date_compare=datetime(int(first_member.split('_')[0]),int(first_member.split('_')[1]),int(first_member.split('_')[2]),
                                           int(thirt_member.split('_')[0]),int(thirt_member.split('_')[1]),int(thirt_member.split('_')[2]))
                     if date_compare >= self.strt_date and date_compare <= self.end_date:
+                        self.LabelDict[exp][labels_csv.columns.values[col_num].lower()].append(label)
                         self.DateDict[exp][labels_csv.columns.values[col_num].lower()].append(''.join((first_member,sec_member,thirt_member)))
                     pbar.update()
+                self.N_points_MA(self.LabelDict[exp][labels_csv.columns.values[col_num].lower()],3)
+
+    def N_points_MA(self,labels,n):
+        filtered_labels= []
+        labels_pad= np.pad(labels,(n-1,0),'constant', constant_values=labels[0])
+        for i in range(len(labels)):
+            mean_point= np.mean(labels_pad[i:i+(n-1)])
+            filtered_labels.append(mean_point)
 
 
+        filtered_labels= self.Fit2BW(filtered_labels)
+        # labels= self.Fit2BW(labels)
+
+        return np.asarray(filtered_labels)
+
+    def Fit2BW(self,series_):
+        series= np.asarray(copy.deepcopy(series_))
+        series -= min(series)
+        series /= max(series)
+        series *= 100
+        return series
 def init_exp_dicts(list_of_exp:list,list_of_keys: list):
     '''
 

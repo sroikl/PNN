@@ -47,7 +47,7 @@ def train_model(model, dataloaders, criterion, optimizer, scheduler, device, num
                     pbar.set_description(f'{phase} ({loss.item():.3f})')
                     pbar.update()
 
-                epoch_loss = np.sum(running_loss) /len(dataloaders[phase])
+                epoch_loss = np.sum(running_loss) /len(dataloaders[phase].batch_sampler)
 
             print('{} Epoch Loss: {:.4f}'.format(
                 phase, epoch_loss))
@@ -98,7 +98,7 @@ def eval_model(model, dataloaders, criterion, optimizer, scheduler, device, num_
                     pbar.set_description(f'{phase} ({loss.item():.3f})')
                     pbar.update()
 
-            epoch_loss = np.sum(running_loss) / len(dataloaders[phase])
+            epoch_loss = np.sum(running_loss) / len(dataloaders[phase].batch_sampler)
 
             print('{} Epoch Loss: {:.4f}'.format(phase, epoch_loss))
 
