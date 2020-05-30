@@ -88,9 +88,9 @@ class CollectData:
 
         # === Uploading the labels ===
         labels = np.asarray(labels_csv['ET'].interpolate(method='quadratic').fillna(0))
-        labels -= labels.min()
-        labels /= max(labels)
-        labels *= 100
+        # labels -= labels.min()
+        # labels /= max(labels)
+        # labels *= 100
         plant_labels = labels_csv['lysimeter']
         len_labels= len(labels)
         with tqdm.tqdm(total= len_labels, desc=f'{exp} label collecting') as pbar:
@@ -99,7 +99,6 @@ class CollectData:
                 self.DateDict[exp][plant_labels[idx]].append(str(date).replace('-', '_') + '_{num:02d}_'.format(
                     num=hr) + '{num:02d}'.format(num=min))
                 pbar.update()
-
     def Collect_exp3_dates_labels(self,labels_csv,exp):
         time= np.asarray(labels_csv.iloc[:,0])
         len_col= labels_csv.shape[0]
@@ -111,11 +110,7 @@ class CollectData:
         with tqdm.tqdm(total= len_col*32, desc=f'{exp} collecting') as pbar:
             for col_num in range(1,len(labels_csv.columns)-2):
                 labels= np.asarray(labels_csv.iloc[:,col_num].interpolate(method='quadratic').fillna(0.))
-                # labels= self.N_points_MA(labels,10)
-                # labels-= labels.min()
-                # labels/= max(labels)
-                # labels *= 100
-
+                print(labels_csv.columns.values[col_num].lower())
                 for time_point,label in zip(time,labels):
                     sec_member= '_'
                     thirt_member= time_point.split()[1].replace(':','_')
@@ -126,7 +121,8 @@ class CollectData:
                         self.LabelDict[exp][labels_csv.columns.values[col_num].lower()].append(label)
                         self.DateDict[exp][labels_csv.columns.values[col_num].lower()].append(''.join((first_member,sec_member,thirt_member)))
                     pbar.update()
-                self.N_points_MA(self.LabelDict[exp][labels_csv.columns.values[col_num].lower()],3)
+                self.LabelDict[exp][labels_csv.columns.values[col_num].lower()]= \
+                    self.N_points_MA(self.LabelDict[exp][labels_csv.columns.values[col_num].lower()],6)
 
     def N_points_MA(self,labels,n):
         filtered_labels= []
@@ -139,13 +135,15 @@ class CollectData:
         filtered_labels= self.Fit2BW(filtered_labels)
         # labels= self.Fit2BW(labels)
 
-        return np.asarray(filtered_labels)
+        return filtered_labels
 
     def Fit2BW(self,series_):
         series= np.asarray(copy.deepcopy(series_))
-        series -= min(series)
-        series /= max(series)
-        series *= 100
+        series *= 5000
+        for i,val in enumerate(series):
+            if val<=-1:
+                series[i]=series[i-1]
+
         return series
 def init_exp_dicts(list_of_exp:list,list_of_keys: list):
     '''

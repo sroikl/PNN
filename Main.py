@@ -101,6 +101,6 @@ def RunExpirement(train_lines:list,test_lines:list):
         Trainer.fit(dl_train=dataloaders['train'], dl_test=dataloaders['test'], num_epochs=exp_args['num_epochs'])
 
 if __name__ =='__main__':
-    # RunExpirement(train_lines=['line1','line2','line3','line4','line5'],test_lines=['line6'])
-    RunExpirement(train_lines=['line1'], test_lines=['line2'])
+    RunExpirement(train_lines=['line1','line2','line3','line4',],test_lines=['line5'])
+    # RunExpirement(train_lines=['line1'], test_lines=['line2'])
 
