@@ -40,17 +40,17 @@ def RunExpirement(train_lines:list,test_lines:list):
 
     test_samples= list(itertools.chain(*test_sampels))
     test_labels= list(itertools.chain(*test_labels))
-    with tqdm.tqdm(total= len(train_sampels), desc='Fitting Standart Scaler') as pbar:
-        data= np.concatenate((train_sampels[0].numpy(),train_sampels[1].numpy()))
-        for i in range(1,len(train_sampels)):
-            data= np.concatenate((data,train_sampels[i]))
-            pbar.update()
-    scaler= StandardScaler()
-    scaler.fit(data)
-    print(f'Size of Standart Scaler mean vector:{len(scaler.mean_)}')
-    print(f'Size of Standart Scaler Var vector:{len(scaler.var_)}')
+    # with tqdm.tqdm(total= len(train_sampels), desc='Fitting Standart Scaler') as pbar:
+    #     data= np.concatenate((train_sampels[0].numpy(),train_sampels[1].numpy()))
+    #     for i in range(1,len(train_sampels)):
+    #         data= np.concatenate((data,train_sampels[i]))
+    #         pbar.update()
+    # scaler= StandardScaler()
+    # scaler.fit(data)
+    # print(f'Size of Standart Scaler mean vector:{len(scaler.mean_)}')
+    # print(f'Size of Standart Scaler Var vector:{len(scaler.var_)}')
 
-
+    scaler= None
     dataset_train= PlantDataset(samples= train_sampels , labels= train_labels,Transforms= None,scaler=scaler)
     dataset_test= PlantDataset(samples= test_samples, labels= test_labels, Transforms= None,scaler=scaler)
 

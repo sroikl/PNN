@@ -110,7 +110,6 @@ class CollectData:
         with tqdm.tqdm(total= len_col*32, desc=f'{exp} collecting') as pbar:
             for col_num in range(1,len(labels_csv.columns)-2):
                 labels= np.asarray(labels_csv.iloc[:,col_num].interpolate(method='quadratic').fillna(0.))
-                print(labels_csv.columns.values[col_num].lower())
                 for time_point,label in zip(time,labels):
                     sec_member= '_'
                     thirt_member= time_point.split()[1].replace(':','_')
