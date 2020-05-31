@@ -2,12 +2,19 @@ import numpy as np
 import torch
 import os
 def Extract_file(load_path,name):
-    list_=[]
+    train_loss_list,val_loss_list,test_loss_list=[],[],[]
     data = torch.load(load_path)
-    for epoch_loss in data:
-        list_.append(epoch_loss.numpy())
+    train_loss= data['train_loss'] ; val_loss= data['val_loss'] ; test_loss= data['test_loss']
+    for epoch_loss in train_loss:
+        train_loss_list.append(epoch_loss.numpy())
+    for epoch_loss in val_loss:
+        val_loss_list.append(epoch_loss.numpy())
+    for epoch_loss in test_loss:
+        test_loss_list.append(epoch_loss.numpy())
 
-    torch.save(f'{os.getcwd()}/{name}')
+    exp_data = dict( train_loss=train_loss_list, val_loss=val_loss_list,
+                    test_loss=test_loss)
+    torch.save(exp_data,f'{os.getcwd()}/{name}')
 if __name__ =='__main__':
     name='Results.pt'
     load_path= f'{os.getcwd()}/{name}'
