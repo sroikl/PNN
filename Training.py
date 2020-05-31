@@ -2,7 +2,7 @@ import torch
 import copy
 import tqdm
 import numpy as np
-
+import itertools
 def train_model(model, dataloaders, criterion, optimizer, scheduler, device, num_epochs=25):
 
     best_model_wts = copy.deepcopy(model.state_dict())
@@ -78,7 +78,7 @@ def eval_model(model, dataloaders, criterion, optimizer, scheduler, device, num_
             model.eval()  # Set model to evaluate mode
 
             running_loss = []
-
+            epoch_outputs,epoch_labels= [],[]
             # Iterate over data.
             with tqdm.tqdm(total=len(dataloaders[phase]),desc=f'{phase}') as pbar:
                 for inputs, labels in dataloaders[phase]:
@@ -92,7 +92,8 @@ def eval_model(model, dataloaders, criterion, optimizer, scheduler, device, num_
                     with torch.set_grad_enabled(phase == 'train'):
                         outputs = model(inputs)
                         loss = criterion(outputs, labels)
-
+                        epoch_outputs.append(outputs.detach().cpu().numpy())
+                        epoch_labels.append(labels.cpu().numpy())
                     # statistics
                     running_loss.append(loss.item())
                     pbar.set_description(f'{phase} ({loss.item():.3f})')
@@ -103,5 +104,5 @@ def eval_model(model, dataloaders, criterion, optimizer, scheduler, device, num_
             print('{} Epoch Loss: {:.4f}'.format(phase, epoch_loss))
 
 
-    return epoch_loss
+    return epoch_loss,list(itertools.chain(*epoch_labels)),list(itertools.chain(*epoch_outputs))
 

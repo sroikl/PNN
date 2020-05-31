@@ -89,10 +89,10 @@ def RunExpirement(train_lines:list,test_lines:list):
         best_model,train_loss_list,val_lost_list= train_model(model=model, optimizer=optimizer,dataloaders= dataloaders,scheduler=lr_sched,device=device,
                             criterion=criterion, num_epochs= exp_args['num_epochs'])
 
-        test_loss= eval_model(model= best_model, dataloaders= dataloaders, criterion= criterion, optimizer= optimizer,
+        test_loss,true_labels,predicted_output= eval_model(model= best_model, dataloaders= dataloaders, criterion= criterion, optimizer= optimizer,
                           scheduler= None, device= device, num_epochs= 1)
 
-        exp_data= dict(model= best_model.state_dict(),train_loss= train_loss_list, val_loss= val_lost_list,test_loss= test_loss)
+        exp_data= dict(train_loss= train_loss_list, val_loss= val_lost_list,test_loss= test_loss,true_labels=true_labels,predicted_output=predicted_output)
         torch.save(exp_data,f'{os.getcwd()}/Results.pt')
 
     else:
