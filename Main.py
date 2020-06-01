@@ -92,7 +92,8 @@ def RunExpirement(train_lines:list,test_lines:list):
         model = torch.nn.DataParallel(model)
 
     # params_non_frozen = filter(lambda p: p.requires_grad, model.parameters())
-    optimizer= torch.optim.Adam(params= model.parameters() ,lr= exp_args['lr'])
+
+    optimizer= torch.optim.SGD(params= model.parameters() ,lr= exp_args['lr'],weight_decay=0.001)
     lr_sched = torch.optim.lr_scheduler.StepLR(optimizer, step_size=20, gamma=0.5)
 
     criterion= torch.nn.MSELoss(reduction='mean').to(device=device)
