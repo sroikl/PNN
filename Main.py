@@ -54,14 +54,29 @@ def RunExpirement(train_lines:list,test_lines:list):
     dataset_train= PlantDataset(samples= train_sampels , labels= train_labels,Transforms= None,scaler=scaler)
     dataset_test= PlantDataset(samples= test_samples, labels= test_labels, Transforms= None,scaler=scaler)
 
-    lenDataset = len(dataset_train)
-    lenTrainset = int(lenDataset * 0.9)
-    lenValset = lenDataset- lenTrainset
-    train_set, val_set = random_split(dataset_train, [lenTrainset, lenValset])
+    # ForTest= True
+    ForTest= False
 
-    dataloaders = {'train': DataLoader(train_set,batch_size= exp_args['batch_size'],shuffle= True,drop_last=True),
-                   'val': DataLoader(val_set,batch_size= exp_args['batch_size'],shuffle= True,drop_last=True),
-                   'test': DataLoader(dataset_test,batch_size= exp_args['batch_size'],shuffle= True,drop_last=True)}
+    if ForTest:
+        lenDataset = len(dataset_train)
+        lenTrainset = int(lenDataset * 0.9)
+        lenValset = lenDataset- lenTrainset
+        train_set, val_set = random_split(dataset_train, [lenTrainset, lenValset])
+
+        dataloaders = {'train': DataLoader(train_set,batch_size= exp_args['batch_size'],shuffle= True,drop_last=True),
+                       'val': DataLoader(val_set,batch_size= exp_args['batch_size'],shuffle= True,drop_last=True),
+                       'test': DataLoader(dataset_test,batch_size= exp_args['batch_size'],shuffle= False,drop_last=True)}
+    else:
+        lenDataset = len(dataset_train)
+        lenTrainset = int(lenDataset * 0.7)
+        lenTestset= int(lenDataset * 0.2)
+        lenValset = lenDataset - lenTrainset- lenTestset
+        train_set, val_set,test_set = random_split(dataset_train, [lenTrainset, lenValset,lenTestset])
+
+        dataloaders = {'train': DataLoader(train_set, batch_size=exp_args['batch_size'], shuffle=True, drop_last=True),
+                       'val': DataLoader(val_set, batch_size=exp_args['batch_size'], shuffle=True, drop_last=True),
+                       'test': DataLoader(test_set, batch_size=exp_args['batch_size'], shuffle=False,
+                                          drop_last=True)}
 
     X,y= next(iter(dataloaders['train']))
     print(f'Shape of Input Tensor: {X.shape}\n')
