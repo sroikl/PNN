@@ -18,7 +18,7 @@ def Create_Embeddings():
 
 
     model= Encoder().to(device=device)
-    Transforms= transforms.Compose([transforms.ToPILImage(),transforms.Resize((300,300)),transforms.ToTensor()])
+    Transforms= transforms.Compose([transforms.ToTensor()])
 
     Embeddings_Dict= {}
     for exp in line_dict.keys():
@@ -32,6 +32,9 @@ def Create_Embeddings():
                 dataset_= EmbeddingsDataset(file_list= sampels , label_list= labels, image_wet_norm= wet_norms,
                                        image_dry_norm= dry_norms, Transforms= Transforms)
                 dl_= DataLoader(dataset= dataset_, batch_size=exp_args['TimeWindow'], shuffle=False, drop_last=True)
+                x_sample,y_sample= next(iter(dl_))
+                print(f'Shape of Input Tensor: {x_sample.shape}\n')
+                print(f'Shape of Label Tensor: {y_sample.shape}\n')
                 with tqdm.tqdm(total=len(dl_),desc=f'Embedding Plant {plant}') as pbar:
                     for x,y in dl_:
                         embeddings= model(x)

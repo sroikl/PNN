@@ -51,6 +51,12 @@ class CollectData:
                 img = image[cfg.pixelmap[exp][key][1][0]:cfg.pixelmap[exp][key][1][1],
                                 cfg.pixelmap[exp][key][0][0]:cfg.pixelmap[exp][key][0][1]]
 
+                xsize, ysize = img.shape
+                padx = self.padsize - xsize;
+                pady = self.padsize - ysize
+                Padded_im = np.pad(img, ((padx // 2, padx // 2), (pady // 2, pady // 2)), constant_values=0,
+                                   mode='constant')
+
                 self.ImageDict[exp][key].append(img)
                 self.image_wet_norm[exp][key].append(wet_tmp)
                 self.image_dry_norm[exp][key].append(dry_tmp)
@@ -88,9 +94,6 @@ class CollectData:
 
         # === Uploading the labels ===
         labels = np.asarray(labels_csv['ET'].interpolate(method='quadratic').fillna(0))
-        # labels -= labels.min()
-        # labels /= max(labels)
-        # labels *= 100
         plant_labels = labels_csv['lysimeter']
         len_labels= len(labels)
         with tqdm.tqdm(total= len_labels, desc=f'{exp} label collecting') as pbar:

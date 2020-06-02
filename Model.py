@@ -76,13 +76,13 @@ class Classifier(nn.Module):
     def __init__(self,embedding_size):
         super(Classifier,self).__init__()
         self.classifier= nn.Sequential(
-                        nn.Linear(in_features= 16*embedding_size,out_features= 4*embedding_size),nn.ReLU(),
+                        nn.Linear(in_features= 8*embedding_size,out_features= 4*embedding_size),nn.ReLU(),
                         nn.Dropout(p= 0.2),
                         nn.Linear(in_features= 4*embedding_size, out_features=512), nn.ReLU(),
                         nn.Dropout(p=0.2),
                         nn.Linear(in_features=512,out_features= 128),nn.ReLU(),
                         nn.Linear(in_features=128,out_features=32),nn.ReLU(),
-                        nn.Linear(in_features= 32, out_features= 16)
+                        nn.Linear(in_features= 32, out_features= 8)
         )
     def forward(self, x):
         return self.classifier(x)

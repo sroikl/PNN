@@ -12,6 +12,7 @@ import tqdm
 import numpy as np
 from sklearn.preprocessing import StandardScaler
 from TrainingOldVersion import TCNTrainer
+
 def RunExpirement(train_lines:list,test_lines:list):
 
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
